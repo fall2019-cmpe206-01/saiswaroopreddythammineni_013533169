@@ -89,20 +89,33 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer csmaInterfaces;
   csmaInterfaces = address.Assign (csmaDevices);
 
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer1 (9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  ApplicationContainer serverApps1 = echoServer1.Install (csmaNodes.Get (nCsma));
+  serverApps1.Start (Seconds (1.0));
+  serverApps1.Stop (Seconds (100.0));
+    
+    UdpEchoServerHelper echoServer2 (10);
+    ApplicationContainer serverApps2 = echoServer2.Install (csmaNodes.Get (nCsma));
+    serverApps2.Start (Seconds (1.0));
+    serverApps2.Stop (Seconds (100.0));
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient1 (csmaInterfaces.GetAddress (nCsma), 9);
+  echoClient1.SetAttribute ("MaxPackets", UintegerValue (1));
+  echoClient1.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+  echoClient1.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  ApplicationContainer clientApps = echoClient.Install (p2pNodes.Get (0));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (10.0));
+  ApplicationContainer clientApps1 = echoClient1.Install (p2pNodes.Get (0));
+  clientApps1.Start (Seconds (2.0));
+  clientApps1.Stop (Seconds (10.0));
+    
+    UdpEchoClientHelper echoClient2 (csmaInterfaces.GetAddress (nCsma), 10);
+    echoClient2.SetAttribute ("MaxPackets", UintegerValue (1));
+    echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+    echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
+    ApplicationContainer clientApps2 = echoClient2.Install (p2pNodes.Get (0));
+    clientApps2.Start (Seconds (2.0));
+    clientApps2.Stop (Seconds (10.0));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
