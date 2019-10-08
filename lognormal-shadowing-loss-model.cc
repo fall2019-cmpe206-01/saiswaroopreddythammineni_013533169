@@ -98,22 +98,17 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                                 Ptr<MobilityModel> a,
                                                 Ptr<MobilityModel> b) const
 {
-	
+    double txPowerDbmRend = txPowerDbm - m_referenceLoss;
     double rxcGaussianNoise = -m_randVariable->GetValue();
     
     NS_LOG_DEBUG ("Gaussian Noise="<<rxcGaussianNoise); //log
     
     double distance = a->GetDistanceFrom(b);
-            
-    if (distance <= m_referenceDistance)
-    {
-        return txPowerDbm - m_referenceLoss;
-    }
-    
-    double pathlossDb = (10 * m_exponent * std::log10 (distance / m_referenceDistance))+ rxcGaussianNoise; //formula for path loss being implemented
+    double pathlossDb = (10 * m_exponent * std::log10 (distance/m_referenceDistance))+ rxcGaussianNoise; //formula for path loss being implemented
     
     
-    return txPowerDbm -m_referenceLoss - pathlossDb;
+    return distance <= m_referenceDistance? txPowerDbmRend : (txPowerDbmRend - pathlossDb);
+    
     
 }
 
